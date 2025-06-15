@@ -1,6 +1,4 @@
-# The code defines a PyTorch model that combines a DenseNet with joint data for a posture
-# classification task, including dataset loading, model training, testing, and validation with
-# confusion matrix visualization.
+
 import os
 import json
 import numpy as np
@@ -93,11 +91,9 @@ class FusionDenseNetModel(nn.Module):
         super().__init__()
         densenet = models.densenet121(weights=None)
         
-        # Modifiquem la primera capa perquè accepti imatges en escala de grisos (1 canal)
         densenet.features.conv0 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
         self.densenet = densenet
         
-        # La sortida de DenseNet121 és de mida 1024
         self.joint_net = nn.Sequential(
             nn.Linear(14, 32),
             nn.ReLU(),
@@ -107,7 +103,7 @@ class FusionDenseNetModel(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(1024 + 16, 128),
             nn.ReLU(),
-            nn.Linear(128, 6)  # 5 classes
+            nn.Linear(128, 6)  
         )
 
     def forward(self, img, joints):
@@ -183,8 +179,8 @@ print(f"✅ Validació Accuracy: {val_acc:.2f}%")
 cm = confusion_matrix(all_labels, all_preds)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=[LABELS[i] for i in range(6)])
 fig, ax = plt.subplots(figsize=(8, 6))
-disp.plot(ax=ax, cmap="Blues")  # cmap ha d'anar aquí si suportat
-plt.setp(ax.get_xticklabels(), rotation=45)  # rotació dels ticks
+disp.plot(ax=ax, cmap="Blues") 
+plt.setp(ax.get_xticklabels(), rotation=45)  
 plt.title("Matriu de confusió (Test)")
 plt.tight_layout()
 plt.show()
